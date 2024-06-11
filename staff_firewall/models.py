@@ -29,9 +29,10 @@ class FwActions(models.Model):
 
 class FwStaff(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    regions = models.ForeignKey(FwRegions, on_delete=models.CASCADE)
+    region = models.ForeignKey(FwRegions, on_delete=models.CASCADE)
     ip = models.CharField(max_length=255)
-    port = models.IntegerField()
+    dst_port = models.IntegerField(default=0)
+    src_port = models.IntegerField(default=0)
     action = models.ForeignKey(FwActions, on_delete=models.CASCADE)
 
     def __str__(self):

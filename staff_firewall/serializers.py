@@ -5,7 +5,7 @@ from .models import FwStaff, Client, FwRegions, FwActions
 class FwStaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = FwStaff
-        fields = ['id', 'client', 'regions', 'ip', 'port', 'action']
+        fields = ['id', 'client', 'region', 'ip', 'src_port', 'dst_port', 'action']
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -33,4 +33,4 @@ class FwStaffDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FwStaff
-        fields = ['id', 'client', 'regions', 'ip', 'port', 'action']
+        fields = ['id', 'client', 'region', 'ip', 'src_port','dst_port', 'action']
