@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import FwStaff, Client, FwRegions, FwActions
+from .models import FwStaff, Client, FwRegions
 
 
 class FwStaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = FwStaff
-        fields = ['id', 'client', 'region', 'ip', 'src_port', 'dst_port', 'action']
+        fields = '__all__'
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -20,17 +20,10 @@ class FwRegionsSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
-class FwActionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FwActions
-        fields = ['name']
-
-
 class FwStaffDetailSerializer(serializers.ModelSerializer):
     client = ClientSerializer()
     regions = FwRegionsSerializer()
-    action = FwActionsSerializer()
 
     class Meta:
         model = FwStaff
-        fields = ['id', 'client', 'region', 'ip', 'src_port','dst_port', 'action']
+        fields = '__all__'

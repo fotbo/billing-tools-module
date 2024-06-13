@@ -5,13 +5,11 @@ from .router.feature_routers import SimpleRouter
 
 router = SimpleRouter(trailing_slash=False)
 
-router.register(
-    r'fw',
-    StaffFirewall,
-    basename='fw',
-    feature_name='staff_firewall.fw')
-
+router.register(r'firewall',
+                StaffFirewall,
+                basename='fw', 
+                feature_name='staff_firewall.fw')
 
 urlpatterns = [
-    re_path(r'^firewall/', include(router.urls)),
+    re_path(r'^tools/', include(router.urls))
 ]
