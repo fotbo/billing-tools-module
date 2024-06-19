@@ -1,13 +1,14 @@
 import logging
+from typing import Dict
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import FwStaff, FwAction, FwDirection, FwProtocol, FwInterface, FwRegions
 from .serializers import FwStaffSerializer, FwStaffDetailSerializer
 from fleio.core.drf import StaffOnly
-from .opnsense_api import Opnsense
+from .opnsence import rule_manager
 
 LOG = logging.getLogger(__name__)
 
@@ -17,45 +18,29 @@ class StaffFirewall(viewsets.ModelViewSet):
     permission_classes = [StaffOnly, ]
     queryset = FwStaff.objects.all()
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> FwStaffDetailSerializer | FwStaffSerializer:
         if self.action in ['list', 'retrieve']:
             return FwStaffDetailSerializer
         return FwStaffSerializer
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs) -> Response:
         try:
             resp = super().create(request=request, *args, **kwargs)
             return resp
         except (Exception) as e:
-            return Response({'error': str(e)})
-    
-    def perform_create(self, serializer):
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_destroy(self, instance: object) -> None:
         conf_by_region = FwRegions.objects.filter(
-            name=serializer.validated_data.get('region')
+            name=instance.region
             ).first()
         if str(conf_by_region.device_type) == 'OPNsense':
-            opnsense = Opnsense(
-                api_url=conf_by_region.api_url,
-                api_key=conf_by_region.api_key,
-                api_secret=conf_by_region.api_secret)
-            firewall = opnsense.firewall.filter_controller
-            firewall_uuid = firewall.add_rule(
-                direction=serializer.validated_data.get('direction', None),
-                interface=serializer.validated_data.get('interface', None),
-                source_net=serializer.validated_data.get('source_ip', None),
-                destination_net=serializer.validated_data.get('destination_ip', None),
-                action=serializer.validated_data.get('action'),
-                protocol=serializer.validated_data.get('protocol'),
-                source_port=serializer.validated_data.get('source_port', 0),
-                destination_port=serializer.validated_data.get('destination_port', 0),
-                description=serializer.validated_data.get('description', 0)
-                )
-            serializer.validated_data['firewall_uuid'] = firewall_uuid.get('uuid')
-        serializer.save()
-    
-    
+            rule_manager.delete(conf=conf_by_region, instance=instance)
+
     @action(detail=False, methods=['get'])
-    def create_options(self, request, *args, **kwargs):
+    def create_options(self, request, *args, **kwargs) -> Response(Dict[str, any]):
         choices_info = {
             'action': [choice[0] for choice in FwAction.choices],
             'direction': [choice[0] for choice in FwDirection.choices],

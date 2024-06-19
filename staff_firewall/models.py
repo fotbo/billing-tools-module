@@ -153,6 +153,7 @@ class FwInterface(models.TextChoices):
     PUBLIC_NET_V4_V6 = 'opt1'
     PUBLIC_NET_V6_ONLY = None
 
+
 class FwRegions(models.Model):
     name = models.CharField(max_length=255)
     api_key = models.CharField(max_length=255)
@@ -176,7 +177,8 @@ class FwStaff(models.Model):
     action = models.CharField(max_length=50, choices=FwAction.choices, default=FwAction.BLOCK)
     direction = models.CharField(max_length=50, choices=FwDirection.choices, default=FwDirection.INPUT)
     interface = models.JSONField(max_length=255, null=True)
-    protocol  = models.CharField(max_length=50, choices=FwProtocol.choices, default=FwProtocol.ANY)
+    protocol = models.CharField(max_length=50, choices=FwProtocol.choices, default=FwProtocol.ANY)
+    enabled = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.client} - {self.region}"

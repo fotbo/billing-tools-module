@@ -197,10 +197,6 @@ class Filter(object):
     def toggle_rule(self, uuid: str = None) -> dict:
         """
         Toggles the enabled state of a filter rule.
-        :param uuid: The UUID of the filter rule to toggle
-        :type uuid: str
-        :return: A parsed filter rule
-        :rtype: dict
         """
         response = self.device._authenticated_request("POST", f"firewall/filter/toggleRule/{uuid}")
         if response["changed"]:
@@ -212,10 +208,6 @@ class Filter(object):
     def delete_rule(self, uuid: str = None) -> bool:
         """
         Deletes a rule. Returns a bool or throws an exception since we don't really care about the UUID once it's gone.
-        :param uuid: The UUID of the filter rule to delete
-        :type uuid: str
-        :return: A bool that indicates operation result
-        :rtype: bool
         """
         query_results = self.device._authenticated_request("POST", f"firewall/filter/delRule/{uuid}")
         if query_results['result'] == "deleted":
