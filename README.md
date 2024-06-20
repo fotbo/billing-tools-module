@@ -87,9 +87,9 @@ https://bill.fotbo.host/backend/staffapi/tools/firewall/pk
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall/pk/toggle_rule
 ```
->HTTP status OK == 200.
->HTTP status ERROR == 400_BAD_REQUEST.
->HTTP status ERROR == 404_NOT_FOUND.
+>* HTTP status OK == 200.
+>* HTTP status ERROR == 400_BAD_REQUEST.
+>* HTTP status ERROR == 404_NOT_FOUND.
 
 ## Getting started
 
