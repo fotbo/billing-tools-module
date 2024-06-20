@@ -3,6 +3,7 @@ from typing import Dict
 from .models import FwStaff
 from .opnsense_api import Opnsense
 
+
 @dataclass
 class RuleManager:
 
@@ -51,6 +52,10 @@ class RuleManager:
         firewall = self.opnsense_request(conf)
         firewall_uuid = FwStaff.objects.filter(id=instance.pk).first().firewall_uuid
         firewall.delete_rule(uuid=firewall_uuid)
+    
+    def toogle(self, conf, firewall_uuid):
+        firewall = self.opnsense_request(conf)
+        return firewall.toggle_rule(firewall_uuid)
 
 
 rule_manager = RuleManager()

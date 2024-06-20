@@ -1,18 +1,23 @@
 from django.db import models
 from fleio.core.models import Client
+from cryptography.fernet import Fernet
+from django.conf import settings
 
 
 class FwDeviceType(models.TextChoices):
     ARISTA = 'Arista'
     OPNSENCE = 'OPNsense'
 
+
 class FwAction(models.TextChoices):
     ALLOW = 'pass'
     BLOCK = 'block'
 
+
 class FwDirection(models.TextChoices):
-    INPUT  = 'in'
+    INPUT = 'in'
     OUTPUT = 'out'
+
 
 class FwProtocol(models.TextChoices):
     ANY = 'any'
@@ -156,10 +161,31 @@ class FwInterface(models.TextChoices):
 
 class FwRegions(models.Model):
     name = models.CharField(max_length=255)
-    api_key = models.CharField(max_length=255)
-    api_secret = models.CharField(max_length=255)
-    api_url = models.URLField()
+    api_key_encrypted = models.CharField(max_length=255)
+    api_secret_encrypted = models.CharField(max_length=255)
+    api_url = models.CharField(max_length=255)
     device_type = models.CharField(max_length=50, choices=FwDeviceType.choices)
+
+    @property
+    def api_key(self):
+        cipher_suite = Fernet(settings.ENCRYPTION_KEY)
+        return cipher_suite.decrypt(self.api_key_encrypted).decode()
+
+    @api_key.setter
+    def api_key(self, api_key):
+        cipher_suite = Fernet(settings.ENCRYPTION_KEY)
+        self.api_key_encrypted = cipher_suite.encrypt(api_key.encode()).decode("utf-8")
+
+    @property
+    def api_secret(self):
+        cipher_suite = Fernet(settings.ENCRYPTION_KEY)
+        return cipher_suite.decrypt(self.api_secret_encrypted).decode()
+
+    @api_secret.setter
+    def api_secret(self, api_secret):
+        cipher_suite = Fernet(settings.ENCRYPTION_KEY)
+        self.api_secret_encrypted = cipher_suite.encrypt(api_secret.encode()).decode("utf-8")
+
 
     def __str__(self):
         return self.name
@@ -182,4 +208,3 @@ class FwStaff(models.Model):
 
     def __str__(self):
         return f"{self.client} - {self.region}"
-

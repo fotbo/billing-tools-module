@@ -4,6 +4,7 @@ from typing import Dict
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from .models import FwStaff, FwAction, FwDirection, FwProtocol, FwInterface, FwRegions
 from .serializers import FwStaffSerializer, FwStaffDetailSerializer
@@ -27,7 +28,8 @@ class StaffFirewall(viewsets.ModelViewSet):
         try:
             resp = super().create(request=request, *args, **kwargs)
             return resp
-        except (Exception) as e:
+        except Exception as e:
+            LOG.error(e)
             return Response(
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST)
@@ -38,6 +40,9 @@ class StaffFirewall(viewsets.ModelViewSet):
             ).first()
         if str(conf_by_region.device_type) == 'OPNsense':
             rule_manager.delete(conf=conf_by_region, instance=instance)
+        instance.delete()
+            
+
 
     @action(detail=False, methods=['get'])
     def create_options(self, request, *args, **kwargs) -> Response(Dict[str, any]):
@@ -51,3 +56,18 @@ class StaffFirewall(viewsets.ModelViewSet):
             'regions': [region.name for region in FwRegions.objects.all()]
         }
         return Response(choices_info)
+
+    @action(detail=True, methods=['post'])
+    def toggle_rule(self, request, pk):
+        obj = get_object_or_404(FwStaff, pk=pk)
+        conf = FwRegions.objects.filter(
+            name=obj.region
+            ).first()
+        toggle_status = rule_manager.toogle(
+            conf=conf,
+            firewall_uuid=obj.firewall_uuid)
+        FwStaff.objects.filter(pk=pk).update(
+            enabled=toggle_status.get('enabled'))
+
+        return Response({'enabled': toggle_status.get('enabled')})
+
