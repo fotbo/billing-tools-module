@@ -38,9 +38,9 @@ Allowed params
 :param enabled:
 :param ipprotocol:
 ```
->Return parsed filter rule
->HTTP status OK == 201_CREATED
->HTTP status ERROR == 400_BAD_REQUEST
+>* Return parsed filter rule
+>* HTTP status OK == 201_CREATED
+>* HTTP status ERROR == 400_BAD_REQUEST
 
 Error example
 
@@ -70,26 +70,26 @@ Allowed params
 :param enabled:
 :param ipprotocol:
 ```
->Return parsed filter rule
->HTTP status OK == 201_CREATED
->HTTP status ERROR == 400_BAD_REQUEST
->HTTP status ERROR == 404_NOT_FOUND
+>* Return parsed filter rule
+>* HTTP status OK == 201_CREATED
+>* HTTP status ERROR == 400_BAD_REQUEST
+>* HTTP status ERROR == 404_NOT_FOUND
 
 * Delete firewall rule - HTTP method DELETE
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall/pk
 ```
->HTTP status OK == 204_NOT_CONTENT
->HTTP status ERROR == 400_BAD_REQUEST
->HTTP status ERROR == 404_NOT_FOUND
+>* HTTP status OK == 204_NOT_CONTENT
+>* HTTP status ERROR == 400_BAD_REQUEST
+>* HTTP status ERROR == 404_NOT_FOUND
 
 * Disabled/Enabled rule
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall/pk/toggle_rule
 ```
->HTTP status OK == 200
->HTTP status ERROR == 400_BAD_REQUEST
->HTTP status ERROR == 404_NOT_FOUND
+>HTTP status OK == 200.
+>HTTP status ERROR == 400_BAD_REQUEST.
+>HTTP status ERROR == 404_NOT_FOUND.
 
 ## Getting started
 
