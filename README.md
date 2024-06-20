@@ -125,5 +125,5 @@ Example
 ![Screenshot](https://github.com/fotbo/billing-tools-module/assets/124665380/050d5628-4233-40ca-936a-3f6c379fc5b8)
 
 ### Extra settings
-**EXLUDED_PRIVATE_NETWORK:** - If you need allow to add IP from private network you can add that network here(type list).
-**RESERVED_NETWORK** - Reserved or system networks, those that cannot be blocked (type list).
+* **EXLUDED_PRIVATE_NETWORK:** - If you need allow to add IP from private network you can add that network here(type list).
+* **RESERVED_NETWORK** - Reserved or system networks, those that cannot be blocked (type list).
