@@ -7,18 +7,18 @@ Firewall based on out of box features included into Arista and OPNsense devices
 ![Staff-firewall](https://github.com/fotbo/billing-tools-module/assets/124665380/0b89d728-f688-4ff3-8a63-e33c1431f30f)
 
 ## Endpoints
-* Get create options - HTTP method GET
+### Get create options - HTTP method GET
 
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall/create_options
 ```
 
-* Get list of firewall rules - HTTP method GET
+###  Get list of firewall rules - HTTP method GET
 
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall
 ```
-* Add firewall rule - HTTP method POST
+###  Add firewall rule - HTTP method POST
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall
 ```
@@ -50,7 +50,7 @@ Error example
 }
 ```
 
-* Update firewall rule - HTTP method PUT
+###  Update firewall rule - HTTP method PUT
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall/pk
 ```
@@ -75,7 +75,7 @@ Allowed params
 >* HTTP status ERROR == 400_BAD_REQUEST
 >* HTTP status ERROR == 404_NOT_FOUND
 
-* Delete firewall rule - HTTP method DELETE
+###  Delete firewall rule - HTTP method DELETE
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall/pk
 ```
@@ -83,7 +83,7 @@ https://bill.fotbo.host/backend/staffapi/tools/firewall/pk
 >* HTTP status ERROR == 400_BAD_REQUEST
 >* HTTP status ERROR == 404_NOT_FOUND
 
-* Disabled/Enabled rule
+###  Disabled/Enabled rule
 ```
 https://bill.fotbo.host/backend/staffapi/tools/firewall/pk/toggle_rule
 ```
