@@ -10,8 +10,11 @@ from .models import FwStaff, FwAction, FwDirection, FwProtocol, FwInterface, FwR
 from .serializers import FwStaffSerializer, FwStaffDetailSerializer
 from fleio.core.drf import StaffOnly
 from .opnsence import rule_manager
+from .perm.custom_permissions import perm
 
 LOG = logging.getLogger(__name__)
+
+perm.init_perm()
 
 
 class StaffFirewall(viewsets.ModelViewSet):

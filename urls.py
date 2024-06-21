@@ -5,7 +5,7 @@ from .router.feature_routers import SimpleRouter
 
 router = SimpleRouter(trailing_slash=False)
 
-router.register(r'firewall', StaffFirewall, basename='fw', feature_name='staff_firewall.fw')
+router.register(r'firewall', StaffFirewall, basename='staff_firewall', feature_name='tools.staff_firewall')
 
 urlpatterns = [
     re_path(r'^tools/', include(router.urls))
