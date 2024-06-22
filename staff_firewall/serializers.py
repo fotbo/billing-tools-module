@@ -23,25 +23,25 @@ class FwStaffSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def check_v4(self, ip: str, net: str) -> None | Exception:
-        if IPv4Address(ip) not in IPv4Network(net):
+        if IPv4Address(ip) not in IPv4Network(net) and net in settings.EXLUDED_PRIVATE_NETWORK:
             if ip_address(ip).is_private:
                 LOG.info(f'{ip} is private')
                 raise serializers.ValidationError(
                                 'IP can not be private. Allow only global IPs')
 
-        if IPv4Address(ip) in IPv4Network(net):
+        if IPv4Address(ip) in IPv4Network(net) and net in settings.RESERVED_NETWORK:
             LOG.info(f'Attempting to block a reserved or system IP address - {ip}')
             raise serializers.ValidationError(
                                 'This IP address is not allowed to be added to the firewall.')
 
     def check_v6(self, ip: str, net: str) -> None | Exception:
-        if IPv6Address(ip) not in IPv6Network(net):
+        if IPv6Address(ip) not in IPv6Network(net) and net in settings.EXLUDED_PRIVATE_NETWORK:
             if ip_address(ip).is_private:
                 LOG.info(f'{ip} is private')
                 raise serializers.ValidationError(
                                 'IP can not be private. Allow only global IPs'
                                 )
-        if IPv6Address(ip) in IPv6Network(net):
+        elif IPv6Address(ip) in IPv6Network(net) and net in settings.RESERVED_NETWORK:
             LOG.info(f'Attempting to block a reserved or system IP address - {ip}')
             raise serializers.ValidationError(
                                 'This IP address is not allowed to be added to the firewall.'
