@@ -28,15 +28,14 @@ Allowed params
 ```
 :param action:
 :param direction:
-:param interface:
+:param interface: [list]
 :param protocol:
-:param source_net:
+:param source_ip:
 :param source_port:
-:param destination_net:
+:param destination_ip:
 :param destination_port:
 :param description:
 :param enabled:
-:param ipprotocol:
 ```
 >* Return parsed filter rule
 >* HTTP status OK == 201_CREATED
