@@ -25,7 +25,7 @@ class RuleManager:
                 protocol=validated_data.get('protocol'),
                 source_port=validated_data.get('source_port', 0),
                 destination_port=validated_data.get('destination_port', 0),
-                description=f"{validated_data.get('client')} | {validated_data.get('description', 0)}",
+                description=validated_data.get('description', 0),
                 enabled=validated_data.get('enabled'),
                 )
 

@@ -28,6 +28,7 @@ Allowed params
 ```
 :param action:
 :param direction:
+:param instance_id:
 :param interface: [list]
 :param protocol:
 :param source_ip:
@@ -60,6 +61,7 @@ Allowed params
 :param action:
 :param direction:
 :param interface: [list]
+:param instance_id:
 :param protocol:
 :param source_ip:
 :param source_port:

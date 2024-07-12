@@ -199,6 +199,7 @@ class FwStaff(models.Model):
     source_port = models.IntegerField(null=True)
     description = models.CharField(max_length=255, null=True)
     firewall_uuid = models.UUIDField(max_length=128, null=True)
+    instance_id = models.IntegerField(default=0)
     action = models.CharField(max_length=50, choices=FwAction.choices, default=FwAction.BLOCK)
     direction = models.CharField(max_length=50, choices=FwDirection.choices, default=FwDirection.INPUT)
     interface = models.JSONField(max_length=255, null=True)

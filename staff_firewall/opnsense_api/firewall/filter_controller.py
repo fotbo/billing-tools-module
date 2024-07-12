@@ -3,7 +3,7 @@ from typing import Union
 
 
 from ..util.parse import parse_firewall_filter_rule, parse_firewall_filter_search_results
-from ..util.validate import validate_add_filter_rule
+from ..util.validate import validator
 
 
 class Filter(object):
@@ -68,7 +68,7 @@ class Filter(object):
         if interface is None:
             interface = ["lan"]
 
-        validate_add_filter_rule(action, direction, ipprotocol, protocol)
+        validator.validate_add_filter_rule(action, direction, ipprotocol, protocol)
 
         if gateway is None:
             gateway = ""
@@ -152,7 +152,7 @@ class Filter(object):
         if log is None: log = existing_rule.get("log")
         if ipprotocol is None: ipprotocol = existing_rule.get("ipprotocol")
 
-        #validate_add_filter_rule(action, direction, ipprotocol, protocol)
+        #validator.validate_add_filter_rule(action, direction, ipprotocol, protocol)
 
         if gateway is None: gateway = ""
 
