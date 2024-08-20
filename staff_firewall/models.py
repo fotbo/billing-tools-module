@@ -156,6 +156,7 @@ class FwProtocol(models.TextChoices):
 
 class FwInterface(models.TextChoices):
     PUBLIC_NET_V4_V6 = 'opt1'
+    PUBLIC_NET_V6_ONLY = 'opt2'
 
 
 class FwRegions(models.Model):

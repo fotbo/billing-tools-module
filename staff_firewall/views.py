@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from .models import FwStaff, FwAction, FwDirection, FwProtocol, FwInterface, FwRegions
 from .serializers import FwStaffSerializer, FwStaffDetailSerializer
 from fleio.core.drf import StaffOnly
-from .opnsence import rule_manager
+from .opnsense import rule_manager
 from .perm.custom_permissions import perm
 
 from .tasks import cleanup_firewall_rule

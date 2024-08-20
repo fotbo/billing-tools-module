@@ -3,7 +3,7 @@ import logging
 from rest_framework import serializers
 
 from .models import FwStaff, Client, FwRegions
-from .opnsence import rule_manager
+from .opnsense import rule_manager
 from .opnsense_api.util.validate import validator
 
 LOG = logging.getLogger(__name__)
