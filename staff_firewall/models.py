@@ -6,7 +6,7 @@ from django.conf import settings
 
 class FwDeviceType(models.TextChoices):
     ARISTA = 'Arista'
-    OPNSENCE = 'OPNsense'
+    OPNSENSE = 'OPNsense'
 
 
 class FwAction(models.TextChoices):
