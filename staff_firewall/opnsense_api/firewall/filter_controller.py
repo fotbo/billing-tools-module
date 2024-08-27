@@ -103,7 +103,7 @@ class Filter(object):
             "gateway": gateway
         }
         response = self.device._authenticated_request("POST", "firewall/filter/addRule", body={"rule": rule_body})
-        if response['result'] == "saved":
+        if response.get('result') == "saved":
             self.apply_changes()
             return self.get_rule(response['uuid'])
         else:
