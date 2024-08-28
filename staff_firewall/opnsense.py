@@ -50,9 +50,11 @@ class RuleManager:
 
     def delete(self, conf: object, instance: object) -> None:
         firewall = self.opnsense_request(conf)
-        firewall_uuid = FwStaff.objects.filter(id=instance.pk).first().firewall_uuid
-        firewall.delete_rule(uuid=firewall_uuid)
-    
+        firewall_uuid = FwStaff.objects.filter(
+            id=instance.pk).first().firewall_uuid
+        if firewall.get_rule(firewall_uuid) is not None:
+            firewall.delete_rule(uuid=firewall_uuid)
+
     def toogle(self, conf, firewall_uuid):
         firewall = self.opnsense_request(conf)
         return firewall.toggle_rule(firewall_uuid)

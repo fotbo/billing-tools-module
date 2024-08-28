@@ -46,7 +46,6 @@ class StaffFirewall(viewsets.ModelViewSet):
         if str(conf_by_region.device_type) == 'OPNsense':
             rule_manager.delete(conf=conf_by_region, instance=instance)
         instance.delete()
-            
 
 
     @action(detail=False, methods=['get'])

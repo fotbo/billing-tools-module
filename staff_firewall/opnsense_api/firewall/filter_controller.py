@@ -210,7 +210,7 @@ class Filter(object):
         Deletes a rule. Returns a bool or throws an exception since we don't really care about the UUID once it's gone.
         """
         query_results = self.device._authenticated_request("POST", f"firewall/filter/delRule/{uuid}")
-        if query_results['result'] == "deleted":
+        if query_results.get('result') == "deleted":
             self.apply_changes()
             return True
         raise Exception(f"Failed to delete filter rule with UUID {uuid} with reason: {query_results['result']}  ")
