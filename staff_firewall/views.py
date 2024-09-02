@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import FwStaff, FwAction, FwDirection, FwProtocol, FwInterface, FwRegions
 from .serializers import FwStaffSerializer, FwStaffDetailSerializer
-from fleio.core.drf import StaffOnly
+from fleio.core.drf import StaffOnly, CustomPermissions
 from .opnsense import rule_manager
 from .perm.custom_permissions import perm
 
@@ -21,7 +21,7 @@ perm.init_perm()
 
 class StaffFirewall(viewsets.ModelViewSet):
 
-    permission_classes = [StaffOnly, ]
+    permission_classes = [CustomPermissions, StaffOnly, ]
     queryset = FwStaff.objects.all()
 
     def get_serializer_class(self) -> FwStaffDetailSerializer | FwStaffSerializer:
