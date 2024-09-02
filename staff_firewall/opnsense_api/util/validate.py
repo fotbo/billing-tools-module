@@ -34,7 +34,7 @@ class ApiValidator:
                                 'IP can not be private. Allow only global IPs')
 
         if IPv4Address(ip) in IPv4Network(net) and net in settings.RESERVED_NETWORK:
-            LOG.info(f'Attempting to block a reserved or system IP address - {ip}')
+            LOG.info(f'Attempting to block a IP address from RESERVED_NETWORK - {ip}')
             raise serializers.ValidationError(
                                 'This IP address is not allowed to be added to the firewall.')
 
@@ -88,10 +88,14 @@ class ApiValidator:
                 )
 
     def is_reserved_ip(self, ip):
+        if ip in settings.SYSTEM_IPS:
+            LOG.info('Attempting to block a system IP address')
+            raise serializers.ValidationError(
+                                'This IP address is not allowed to be added to the firewall.')
         if ip_address(ip).version == 4:
             last_octet = int(ip.split('.')[-1])
-            if last_octet < 13:
-                LOG.info('Attempting to block a reserved or system IP address')
+            if last_octet < 3:
+                LOG.info('Attempting to block a gateway')
                 raise serializers.ValidationError(
                                 'This IP address is not allowed to be added to the firewall.'
                                 )
