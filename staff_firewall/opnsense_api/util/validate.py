@@ -63,11 +63,7 @@ class ApiValidator:
                     self.check_v4(ip, net)
                 elif ip_network(net).version == 6 and ip_address(ip).version == 6:
                     self.check_v6(ip, net)
-        else:
-            LOG.info('Var EXLUDED_PRIVATE_NETWORK is empty')
-            raise serializers.ValidationError(
-                'EXLUDED_PRIVATE_NETWORK can not be empty'
-                )
+        LOG.info('Var EXLUDED_PRIVATE_NETWORK is empty')
 
     def is_reserved_network(self, ip: str) -> None | Exception:
         try:
