@@ -60,11 +60,6 @@ class StaffFirewall(viewsets.ModelViewSet):
             'regions': [region.name for region in FwRegions.objects.all()]
         }
         return Response(choices_info)
-    
-    @action(detail=False,  methods=['get'])
-    def test_test(self, request, *args, **kwargs):
-        cleanup_firewall_rule()
-        return Response({"test": "test"})
 
     @action(detail=True, methods=['post'])
     def toggle_rule(self, request, pk):
