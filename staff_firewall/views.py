@@ -82,7 +82,7 @@ class StaffFirewall(viewsets.ModelViewSet):
 
         return Response({'enabled': toggle_status.get('enabled')})
 
-    @action(detail=False, methods=['post'])
-    def webhook(self, request):
-        cleanup_firewall_rule()
-        return Response({'ok': 'ok'})
+    # @action(detail=False, methods=['post'])
+    # def webhook(self, request):
+    #     cleanup_firewall_rule()
+    #     return Response({'ok': 'ok'})
