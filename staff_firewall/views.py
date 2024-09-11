@@ -5,12 +5,19 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-
-from .models import FwStaff, FwAction, FwDirection, FwProtocol, FwInterface, FwRegions
-from .serializers import FwStaffSerializer, FwStaffDetailSerializer
 from fleio.core.drf import StaffOnly, CustomPermissions
+
+from .models import (FwStaff,
+                     FwAction,
+                     FwDirection,
+                     FwProtocol,
+                     FwInterface,
+                     FwRegions)
+from fleio.openstack.models.instance import Instance
+from .serializers import FwStaffSerializer, FwStaffDetailSerializer
 from .opnsense import rule_manager
 from .perm.custom_permissions import perm
+
 
 from .tasks import cleanup_firewall_rule
 
@@ -75,3 +82,7 @@ class StaffFirewall(viewsets.ModelViewSet):
 
         return Response({'enabled': toggle_status.get('enabled')})
 
+    @action(detail=False, methods=['post'])
+    def webhook(self, request):
+        cleanup_firewall_rule()
+        return Response({'ok': 'ok'})
