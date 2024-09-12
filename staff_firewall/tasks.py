@@ -3,7 +3,7 @@ from fleio.celery import app
 from fleio.openstack.models import Instance
 
 from .models import FwStaff, FwRegions
- from .opnsense import rule_manager
+from .opnsense import rule_manager
 
 LOG = logging.getLogger(__name__)
 
