@@ -27,6 +27,7 @@ class RuleManager:
                 destination_port=validated_data.get('destination_port', 0),
                 description=validated_data.get('description', 0),
                 enabled=validated_data.get('enabled'),
+                ipprotocol=validated_data.get('ip_version')
                 )
 
     def update(self, conf: object, instance: object, validated_data: dict) -> Dict[any, any]:
@@ -55,7 +56,7 @@ class RuleManager:
         if firewall.get_rule(firewall_uuid) is not None:
             firewall.delete_rule(uuid=firewall_uuid)
 
-    def toogle(self, conf, firewall_uuid):
+    def toogle(self, conf: object, firewall_uuid: str) -> dict:
         firewall = self.opnsense_request(conf)
         return firewall.toggle_rule(firewall_uuid)
 

@@ -1,7 +1,7 @@
 import logging
 from typing import Dict
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -12,7 +12,8 @@ from .models import (FwStaff,
                      FwDirection,
                      FwProtocol,
                      FwInterface,
-                     FwRegions)
+                     FwRegions,
+                     FwIpVersion)
 from fleio.openstack.models.instance import Instance
 from .serializers import FwStaffSerializer, FwStaffDetailSerializer
 from .opnsense import rule_manager
@@ -30,6 +31,10 @@ class StaffFirewall(viewsets.ModelViewSet):
 
     permission_classes = [CustomPermissions, StaffOnly, ]
     queryset = FwStaff.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = [
+        'destination_ip', 'source_ip',
+        'instance_id', 'description']
 
     def get_serializer_class(self) -> FwStaffDetailSerializer | FwStaffSerializer:
         if self.action in ['list', 'retrieve']:
@@ -61,6 +66,9 @@ class StaffFirewall(viewsets.ModelViewSet):
             'action': [choice[0] for choice in FwAction.choices],
             'direction': [choice[0] for choice in FwDirection.choices],
             'protocol': [choice[0] for choice in FwProtocol.choices],
+            'ip_version': [
+                {'name': ip_version[1].upper(), 'value': ip_version[0]} for ip_version in FwIpVersion.choices if ip_version[0] is not None
+                ],
             'interface': [
                 {'name': choice[1], 'value': choice[0]} for choice in FwInterface.choices if choice[0] is not None
                 ],
@@ -69,7 +77,7 @@ class StaffFirewall(viewsets.ModelViewSet):
         return Response(choices_info)
 
     @action(detail=True, methods=['post'])
-    def toggle_rule(self, request, pk):
+    def toggle_rule(self, request, pk: int) -> Response(Dict[str, bool]):
         obj = get_object_or_404(FwStaff, pk=pk)
         conf = FwRegions.objects.filter(
             name=obj.region

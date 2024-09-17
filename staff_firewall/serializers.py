@@ -24,7 +24,7 @@ class FwStaffSerializer(serializers.ModelSerializer):
         validator.is_reserved_network(ip)
         validator.is_reserved_ip(ip)
 
-    def validate(self, attrs):
+    def validate(self, attrs) -> None | Exception:
         destination_ip = attrs.get('destination_ip', None)
         source_ip = attrs.get('source_ip', None)
         validator.check_if_required(

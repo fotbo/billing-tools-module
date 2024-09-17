@@ -158,6 +158,10 @@ class FwInterface(models.TextChoices):
     PUBLIC_NET_V4_V6 = 'opt1'
     PUBLIC_NET_V6_ONLY = 'opt2'
 
+class FwIpVersion(models.TextChoices):
+    IPV4 = 'inet'
+    IPV6 = 'inet6'
+
 
 class FwRegions(models.Model):
     name = models.CharField(max_length=255)
@@ -167,22 +171,22 @@ class FwRegions(models.Model):
     device_type = models.CharField(max_length=50, choices=FwDeviceType.choices)
 
     @property
-    def api_key(self):
+    def api_key(self) -> str:
         cipher_suite = Fernet(settings.ENCRYPTION_KEY)
         return cipher_suite.decrypt(self.api_key_encrypted).decode()
 
     @api_key.setter
-    def api_key(self, api_key):
+    def api_key(self, api_key: str) -> None:
         cipher_suite = Fernet(settings.ENCRYPTION_KEY)
         self.api_key_encrypted = cipher_suite.encrypt(api_key.encode()).decode("utf-8")
 
     @property
-    def api_secret(self):
+    def api_secret(self) -> str:
         cipher_suite = Fernet(settings.ENCRYPTION_KEY)
         return cipher_suite.decrypt(self.api_secret_encrypted).decode()
 
     @api_secret.setter
-    def api_secret(self, api_secret):
+    def api_secret(self, api_secret: str) -> None:
         cipher_suite = Fernet(settings.ENCRYPTION_KEY)
         self.api_secret_encrypted = cipher_suite.encrypt(api_secret.encode()).decode("utf-8")
 
@@ -206,6 +210,7 @@ class FwStaff(models.Model):
     interface = models.JSONField(max_length=255, null=True)
     protocol = models.CharField(max_length=50, choices=FwProtocol.choices, default=FwProtocol.ANY)
     enabled = models.BooleanField(default=False)
+    ip_version = models.CharField(max_length=50, choices=FwIpVersion.choices, default=FwIpVersion.IPV4)
 
     def __str__(self):
         return f"{self.client} - {self.region}"
