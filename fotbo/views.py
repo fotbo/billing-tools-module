@@ -1,23 +1,55 @@
 from rest_framework import permissions
 import logging
 from django.db.models import Q
-from fleio.openstack.models import Instance
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from fleio.openstack.models import Instance
 from plugins.tickets.enduser.tickets.serializers import TicketCreateSerializer
-from fleio.core.models import AppUser
+from fleio.core.models import AppUser, Client
 from datetime import datetime, timedelta, timezone
+from fleio.openstack.instances.api import Instances as OpenStackInstance
+from fleio.openstack.settings import plugin_settings
+from fleio.openstack.api.session import get_session
+from django.conf import settings
 LOG = logging.getLogger(__name__)
+
+
+def send_ticket(
+        ovpn_user: str,
+        ovpn_password: str,
+        ip_user: str,
+        admin_user: AppUser,
+        client: Client
+        ) -> Response:
+    description = settings.OVPN_MESSAGE_TEMPLATE.format(
+        ip_user=ip_user,
+        ovpn_user=ovpn_user,
+        ovpn_password=ovpn_password)
+
+    ticket_data = {
+        'title': settings.OVPN_MESSAGE_TITLE,
+        'description': description,
+        'department': settings.OVPN_TICKET_DEPARTMENT,
+        'priority': 'medium',
+    }
+
+    serializer = TicketCreateSerializer(data=ticket_data, context={'request': None})
+    if serializer.is_valid(raise_exception=True):
+        ticket = serializer.save(created_by=admin_user, client=client)
+        return Response({
+            'message': f'Found instance with IP {ip_user} and created ticket {ticket.id}.'
+        }, status=200)
+    return Response({'message': 'Failed to create ticket.'}, status=400)
 
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def public_view(request):
-    ip_user = request.META.get('HTTP_X_FORWARDED_FOR')
-    #ip_user = request.data.get('ip_address')
+    #ip_user = request.META.get('HTTP_X_FORWARDED_FOR')
+    ip_user = request.data.get('ip_address')
     ovpn_user = request.data.get('ovpn_user')
     ovpn_password = request.data.get('ovpn_password')
-    admin_user = AppUser.objects.get(id=974054)
+    admin_user = AppUser.objects.get(id=settings.OVPN_ADMIN_APPUSER)
     now = datetime.now(timezone.utc)
     five_minutes_ago = now - timedelta(minutes=5)
 
@@ -35,38 +67,28 @@ def public_view(request):
     if not items.exists():
         return Response({'message': 'No Instance found for the provided IP address.'}, status=404)
     item = items.first()
+    client = item.project.service.client
 
-    if not item.project.service.client.users.exists():
-        return Response({'message': 'No user found for the provided IP address.'}, status=404)
-    user = item.project.service.client.users.first()
-
-    recent_action = any(
-        action.action in ['rebuild', 'create'] and action.start_time >= five_minutes_ago
-        for action in item.actions.all()
+    scoped_session = get_session(
+        auth_url=plugin_settings.AUTH_URL,
+        project_id=item.project_id,
+        project_domain_id=plugin_settings.PROJECT_DOMAIN_ID,
+        admin_username=plugin_settings.USERNAME,
+        admin_password=plugin_settings.PASSWORD,
+        admin_domain_id=plugin_settings.USER_DOMAIN_ID,
+        api_version='3',
+        verify=plugin_settings.require_valid_ssl,
+        timeout=plugin_settings.TIMEOUT,
     )
-    if not recent_action:
-        return Response({'message': 'There was no rebuild or create in 5 minutes'}, status=400)
 
-    data = {
-        'title': f'Login and Password for OVPN Server {ip_user}',
-        'description': (
-            f"<b>OVPN Server Details</b><br>"
-            f"----------------------<br>"
-            f"URL: https://{ip_user}<br>"
-            f"User: {ovpn_user}<br>"
-            f"Password: {ovpn_password}<br>"
-        ),
-        'department': 1,
-        'priority': 'medium',
-    }
+    actions, has_more = OpenStackInstance(api_session=scoped_session).get(item).get_actions()
 
-    serializer = TicketCreateSerializer(data=data, context={'request': None})
-    if serializer.is_valid(raise_exception=True):
-        ticket = serializer.save(created_by=admin_user, assigned_to=user)
-        return Response({'message': f'Found {items.count()} Instance with IP {ip_user} '
-                                    f'and created ticket {ticket.id}.'}, status=200)
-    else:
-        return Response({'message': 'Failed to create ticket.'}, status=400)
+    action_found = any(
+        action['action'] in ['rebuild', 'create'] and action['start_time'] >= five_minutes_ago
+        for action in actions
+    )
 
+    if not action_found:
+        return Response({'message': 'No rebuild or activate actions found in the last 5 minutes.'}, status=404)
 
-
+    return send_ticket(ovpn_user, ovpn_password, ip_user, admin_user, client)
