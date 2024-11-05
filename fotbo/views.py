@@ -15,16 +15,16 @@ LOG = logging.getLogger(__name__)
 
 
 def send_ticket(
-        ovpn_user: str,
-        ovpn_password: str,
+        vpn_user: str,
+        vpn_password: str,
         ip_user: str,
         admin_user: AppUser,
         client: Client
         ) -> Response:
     description = settings.OVPN_MESSAGE_TEMPLATE.format(
         ip_user=ip_user,
-        ovpn_user=ovpn_user,
-        ovpn_password=ovpn_password)
+        vpn_user=vpn_user,
+        vpn_password=vpn_password)
 
     ticket_data = {
         'title': settings.OVPN_MESSAGE_TITLE,
@@ -47,13 +47,13 @@ def send_ticket(
 def public_view(request):
     #ip_user = request.META.get('HTTP_X_FORWARDED_FOR')
     ip_user = request.data.get('ip_address')
-    ovpn_user = request.data.get('ovpn_user')
-    ovpn_password = request.data.get('ovpn_password')
+    vpn_user = request.data.get('vpn_user')
+    vpn_password = request.data.get('vpn_password')
     admin_user = AppUser.objects.get(id=settings.OVPN_ADMIN_APPUSER)
     now = datetime.now(timezone.utc)
     five_minutes_ago = now - timedelta(minutes=5)
 
-    if not ovpn_user or not ovpn_password or not ip_user:
+    if not vpn_user or not vpn_password or not ip_user:
         return Response({'message': 'Not all data was provided'}, status=400)
 
     if ip_user:
@@ -91,4 +91,4 @@ def public_view(request):
     if not action_found:
         return Response({'message': 'No rebuild or activate actions found in the last 5 minutes.'}, status=404)
 
-    return send_ticket(ovpn_user, ovpn_password, ip_user, admin_user, client)
+    return send_ticket(vpn_user, vpn_password, ip_user, admin_user, client)
