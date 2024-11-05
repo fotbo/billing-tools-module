@@ -21,15 +21,15 @@ def send_ticket(
         admin_user: AppUser,
         client: Client
         ) -> Response:
-    description = settings.OVPN_MESSAGE_TEMPLATE.format(
+    description = settings.VPN_MESSAGE_TEMPLATE.format(
         ip_user=ip_user,
         vpn_user=vpn_user,
         vpn_password=vpn_password)
 
     ticket_data = {
-        'title': settings.OVPN_MESSAGE_TITLE,
+        'title': settings.VPN_MESSAGE_TITLE,
         'description': description,
-        'department': settings.OVPN_TICKET_DEPARTMENT,
+        'department': settings.VPN_TICKET_DEPARTMENT,
         'priority': 'medium',
     }
 
@@ -49,7 +49,7 @@ def public_view(request):
     ip_user = request.data.get('ip_address')
     vpn_user = request.data.get('vpn_user')
     vpn_password = request.data.get('vpn_password')
-    admin_user = AppUser.objects.get(id=settings.OVPN_ADMIN_APPUSER)
+    admin_user = AppUser.objects.get(id=settings.VPN_ADMIN_APPUSER)
     now = datetime.now(timezone.utc)
     five_minutes_ago = now - timedelta(minutes=5)
 
