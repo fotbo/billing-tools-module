@@ -5,7 +5,7 @@
 ### Create notification - HTTP method POST
 
 ```
-https://bill.fotbo.host/backend/staffapi/fotbo/public/
+https://bill.fotbo.host/backend/staffapi/fotbo/public/vpn-notification
 ```
 
 Allowed params
