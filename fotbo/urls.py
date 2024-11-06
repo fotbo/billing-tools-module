@@ -2,5 +2,5 @@ from . import views
 from django.urls import path
 
 urlpatterns = [
-    path('public/', views.public_view, name='ovpn'),
+    path('public/vpn-notification', views.public_vpn_notification, name='vpn-notification'),
 ]

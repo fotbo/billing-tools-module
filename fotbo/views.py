@@ -38,13 +38,13 @@ def send_ticket(
         ticket = serializer.save(created_by=admin_user, client=client)
         return Response({
             'message': f'Found instance with IP {ip_user} and created ticket {ticket.id}.'
-        }, status=200)
+        }, status=201)
     return Response({'message': 'Failed to create ticket.'}, status=400)
 
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
-def public_view(request):
+def public_vpn_notification(request):
     #ip_user = request.META.get('HTTP_X_FORWARDED_FOR')
     ip_user = request.data.get('ip_address')
     vpn_user = request.data.get('vpn_user')
