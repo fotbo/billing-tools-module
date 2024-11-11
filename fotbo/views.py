@@ -67,7 +67,7 @@ def public_vpn_notification(request):
     if not port:
         return Response({'message': 'No port found for the provided IP address.'}, status=404)
 
-    items = Instance.objects.filter(ports__id=port.id)
+    items = Instance.objects.filter(id=port.device_id)
 
     if not items.exists():
         return Response({'message': 'No Instance found for the provided IP address.'}, status=404)
