@@ -1,9 +1,8 @@
 from rest_framework import permissions
 import logging
-from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from fleio.openstack.models import Instance
+from fleio.openstack.models import Instance, InstanceIPTracker
 from plugins.tickets.enduser.tickets.serializers import TicketCreateSerializer
 from fleio.core.models import AppUser, Client
 from datetime import datetime, timedelta, timezone
@@ -60,9 +59,15 @@ def public_vpn_notification(request):
         # HTTP_X_FORWARDED_FOR can contain several IP addresses, take the first one
         ip_user = ip_user.split(',')[0].strip()
 
-    items = Instance.objects.filter(
-        Q(addresses__icontains=f'"address": "{ip_user}"')
-    )
+    ip_tracker = InstanceIPTracker.objects.filter(ip_address=ip_user)
+    if not ip_tracker.exists():
+        return Response({'message': 'No Instance found for the provided IP address.'}, status=404)
+
+    port = ip_tracker.first().port
+    if not port:
+        return Response({'message': 'No port found for the provided IP address.'}, status=404)
+
+    items = Instance.objects.filter(ports__id=port.id)
 
     if not items.exists():
         return Response({'message': 'No Instance found for the provided IP address.'}, status=404)
