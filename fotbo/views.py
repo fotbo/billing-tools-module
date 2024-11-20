@@ -44,8 +44,8 @@ def send_ticket(
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def public_vpn_notification(request):
-    #ip_user = request.META.get('HTTP_X_FORWARDED_FOR')
-    ip_user = request.data.get('ip_address')
+    ip_user = request.META.get('HTTP_X_FORWARDED_FOR')
+    #ip_user = request.data.get('ip_address')
     vpn_user = request.data.get('vpn_user')
     vpn_password = request.data.get('vpn_password')
     admin_user = AppUser.objects.get(id=settings.VPN_ADMIN_APPUSER)
