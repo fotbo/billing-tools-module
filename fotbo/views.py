@@ -10,7 +10,19 @@ from fleio.openstack.instances.api import Instances as OpenStackInstance
 from fleio.openstack.settings import plugin_settings
 from fleio.openstack.api.session import get_session
 from django.conf import settings
+import ipaddress
 LOG = logging.getLogger(__name__)
+
+
+def check_ip_version(ip):
+    try:
+        ip_obj = ipaddress.ip_address(ip)
+        if isinstance(ip_obj, ipaddress.IPv4Address):
+            return "IPv4"
+        elif isinstance(ip_obj, ipaddress.IPv6Address):
+            return "IPv6"
+    except ValueError:
+        return None
 
 
 def send_ticket(
@@ -18,7 +30,8 @@ def send_ticket(
         vpn_password: str,
         ip_user: str,
         admin_user: AppUser,
-        client: Client
+        client: Client,
+        item_name: str
         ) -> Response:
     description = settings.VPN_MESSAGE_TEMPLATE.format(
         ip_user=ip_user,
@@ -26,7 +39,7 @@ def send_ticket(
         vpn_password=vpn_password)
 
     ticket_data = {
-        'title': settings.VPN_MESSAGE_TITLE,
+        'title': settings.VPN_MESSAGE_TITLE.format(item_name=item_name),
         'description': description,
         'department': settings.VPN_TICKET_DEPARTMENT,
         'priority': 'medium',
@@ -58,6 +71,10 @@ def public_vpn_notification(request):
     if ip_user:
         # HTTP_X_FORWARDED_FOR can contain several IP addresses, take the first one
         ip_user = ip_user.split(',')[0].strip()
+
+    ip_version = check_ip_version(ip_user)
+    if ip_version is None:
+        return Response({'message': 'Invalid IP address provided.'}, status=400)
 
     ip_tracker = InstanceIPTracker.objects.filter(ip_address=ip_user).order_by('-start').first()
     if not ip_tracker:
@@ -94,4 +111,6 @@ def public_vpn_notification(request):
     if not action_found:
         return Response({'message': 'No rebuild or activate actions found in the last 5 minutes.'}, status=404)
 
-    return send_ticket(vpn_user, vpn_password, ip_user, admin_user, client)
+    if ip_version == 'IPv6':
+        ip_user = f'[{ip_user}]'
+    return send_ticket(vpn_user, vpn_password, ip_user, admin_user, client, item.name)
